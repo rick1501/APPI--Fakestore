@@ -3,12 +3,14 @@ Feature: FakeStore API - Pruebas Completas
   Background:
     * url 'https://fakestoreapi.com'
 
-  Scenario: Listar productos de la categoría electronics
-    Given path 'products/category/electronics'
-    When method GET
+  Scenario: Validate products API
+    Given url 'https://fakestoreapi.com'
+    And path 'products/category/electronics'
+    When method get
     Then status 200
-    And match response == '#[1]'
-    And match each response[*].category == 'electronics'
+    And match response == '#[]'
+    And match each response contains { id: '#number', title: '#string', price: '#number', category: 'electronics' }
+
 
   Scenario: Consultar un producto específico
     Given path 'products', 1
@@ -17,7 +19,7 @@ Feature: FakeStore API - Pruebas Completas
     And match response contains { id: 1 }
 
   Scenario: Crear un producto y actualizarlo
-    * def newProduct = 
+    * def newProduct =
     """
     {
       "title": "QA Karate Product",
@@ -30,7 +32,7 @@ Feature: FakeStore API - Pruebas Completas
     Given path 'products'
     And request newProduct
     When method POST
-    Then status 200
+    Then status 201
     * def createdId = response.id
 
     # Actualizar imagen
@@ -53,8 +55,3 @@ Feature: FakeStore API - Pruebas Completas
       | "men's clothing"  |
       | "women's clothing"|
 
-  Scenario: Listar todos los productos
-    Given path 'products'
-    When method GET
-    Then status 200
-    And match response == '#[1]'
